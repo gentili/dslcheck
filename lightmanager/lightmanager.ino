@@ -10,7 +10,7 @@ void setup() {
   }
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
-  
+  Console.println("Waiting for boot");  
 }
 
 boolean booting = true;
@@ -21,7 +21,7 @@ unsigned long lastmailcheck = 0;
 void loop() {
   unsigned long curmillis = millis();
   unsigned long curslow = curmillis % 1000;
-  unsigned long curfast = curmillis % 200;
+  unsigned long curfast = curmillis % 100;
   
   int msgsize = 0;
   if (curmillis - lastmailcheck > 100) {
@@ -60,7 +60,7 @@ void loop() {
       digitalWrite(i+2, HIGH);
     } else
     if (status[i] == 2) {
-      if (curfast > 100)
+      if (curfast > 50)
         digitalWrite(i+2, HIGH);
       else
         digitalWrite(i+2, LOW);
