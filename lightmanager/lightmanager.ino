@@ -4,7 +4,7 @@ void setup() {
   Bridge.begin();
   Mailbox.begin();
   Console.begin();
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 8; i++) {
     pinMode(i+2,OUTPUT);
     digitalWrite(i+2, LOW);
   }
@@ -15,7 +15,7 @@ void setup() {
 
 boolean booting = true;
 String msg;
-byte status[] = {0,0,0,0,0,0,0};
+byte status[] = {0,0,0,0,0,0,0,0};
 unsigned long lastmailcheck = 0;
 
 void loop() {
@@ -44,15 +44,15 @@ void loop() {
     }
     Mailbox.readMessage(msg);
     Console.println(msg);
-    if (msg.length() != 8 || msg[0] != 'S') {
+    if (msg.length() != 9 || msg[0] != 'S') {
       Console.println("Bad Message");
       return;
     }
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
       status[i] = byte(msg.charAt(i+1))-48;
     }
   }
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < 8; i++) {
     if (status[i] == 0) {
       digitalWrite(i+2, LOW);
     } else

@@ -18,6 +18,7 @@ if len(filelist) == 0:
     sys.exit(1)
 
 wifidevice = config.get("dslcheck","wifidevice")
+wificarrierfile = config.get("dslcheck","wificarrierfile")
 apaddr = config.get("dslcheck","apaddr")
 gatewayprivateaddr = config.get("dslcheck","gatewayprivateaddr")
 gatewaypublicaddr = config.get("dslcheck","gatewaypublicaddr")
@@ -28,7 +29,7 @@ addrregex = r"addr:(\d+\.\d+\.\d+\.\d+)"
 
 client = BridgeClient()
 
-leds = [0,0,0,0,0,0,0]
+leds = [0,0,0,0,0,0,0,0]
 
 # 0 = OFF
 # 1 = ON
@@ -71,7 +72,18 @@ while True:
         print "Check if wifi is running"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: wifi interface missing", ["ifconfig", wifidevice])
+        wificonf = try_command(curstep,"ERR: wifi interface missing", ["ifconfig", wifidevice])
+        time.sleep(1)
+        led_set(curstep,1)
+        curstep += 1
+
+        print "Check if wifi is connected"
+        led_set(curstep,2)
+        led_tx()
+        carrier = try_command(curstep,"ERR: wifi carrier status unknown", ["cat", wificarrierfile])
+        if (carrier[:1] != "1"):
+            print "ERR: wifi carrier not present" + carrier
+            raise DSLCheckException(curstep)
         time.sleep(1)
         led_set(curstep,1)
         curstep += 1
@@ -79,7 +91,7 @@ while True:
         print "Check if ip address is assigned"
         led_set(curstep,2)
         led_tx()
-        match = re.search(addrregex,retval)
+        match = re.search(addrregex,wificonf)
         if not match:
             print "ERR: no ip address assigned to wifi"
             raise DSLCheckException(curstep)
@@ -90,7 +102,7 @@ while True:
         print "Check if we can ping the access point"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: can't ping access point", ["ping","-q","-c","1","-W","4",apaddr])
+        try_command(curstep,"ERR: can't ping access point", ["ping","-q","-c","1","-W","4",apaddr])
         time.sleep(1)
         led_set(curstep,1)
         curstep += 1
@@ -98,7 +110,7 @@ while True:
         print "Check if we can ping the border gateway internal address"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: can't ping border gateway private address", ["ping","-q","-c","1","-W","4",gatewayprivateaddr])
+        try_command(curstep,"ERR: can't ping border gateway private address", ["ping","-q","-c","1","-W","4",gatewayprivateaddr])
         time.sleep(1)
         led_set(curstep,1)
         curstep += 1
@@ -106,7 +118,7 @@ while True:
         print "Check if we can ping the border gateway public address"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: can't ping border gateway public address", ["ping","-q","-c","1","-W","4",gatewaypublicaddr])
+        try_command(curstep,"ERR: can't ping border gateway public address", ["ping","-q","-c","1","-W","4",gatewaypublicaddr])
         time.sleep(1)
         led_set(curstep,1)
         curstep += 1
@@ -114,7 +126,7 @@ while True:
         print "Check if we can ping the ptp peer"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: can't ping border gateway peer address", ["ping","-q","-c","1","-W","4",gatewaypeeraddr])
+        try_command(curstep,"ERR: can't ping border gateway peer address", ["ping","-q","-c","1","-W","4",gatewaypeeraddr])
         time.sleep(1)
         led_set(curstep,1)
         curstep += 1
@@ -122,7 +134,7 @@ while True:
         print "Check if we can ping remote address"
         led_set(curstep,2)
         led_tx()
-        retval = try_command(curstep,"ERR: can't ping remote address", ["ping","-q","-c","1","-W","4",remoteaddr])
+        try_command(curstep,"ERR: can't ping remote address", ["ping","-q","-c","1","-W","4",remoteaddr])
         time.sleep(1)
         led_set(curstep,1)
     except DSLCheckException as e:
