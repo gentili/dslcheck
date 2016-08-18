@@ -13,6 +13,7 @@ void setup() {
   
 }
 
+boolean booting = true;
 String msg;
 byte status[] = {0,0,0,0,0,0,0};
 unsigned long lastmailcheck = 0;
@@ -27,8 +28,20 @@ void loop() {
     msgsize = Mailbox.messageAvailable();
     lastmailcheck = curmillis;
   }
+
+  if (booting) {
+      if (curslow > 500)
+        digitalWrite(13, HIGH);
+      else
+        digitalWrite(13, LOW);
+  }
   
   if (msgsize) {
+    if (booting) {
+      booting = false;
+      digitalWrite(13, HIGH);
+      Console.println("Booted");
+    }
     Mailbox.readMessage(msg);
     Console.println(msg);
     if (msg.length() != 8 || msg[0] != 'S') {
