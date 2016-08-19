@@ -1,5 +1,5 @@
 void setup() {
-  for (int i = 2; i <= 8; i++) { 
+  for (int i = 2; i <= 9; i++) { 
     pinMode(i, OUTPUT);
     digitalWrite(i, HIGH);
   }
@@ -12,8 +12,8 @@ int dir = 1;
 void loop() {
   digitalWrite(pin, LOW);
   pin += dir;
-  if (pin > 8) {
-    pin = 8;
+  if (pin > 9) {
+    pin = 9;
     dir = -1;
   } else if (pin < 2) {
     pin = 2;

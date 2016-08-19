@@ -1,6 +1,8 @@
 #include<Mailbox.h>
 
 void setup() {
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
   Bridge.begin();
   Mailbox.begin();
   Console.begin();
@@ -8,8 +10,6 @@ void setup() {
     pinMode(i+2,OUTPUT);
     digitalWrite(i+2, LOW);
   }
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
   Console.println("Waiting for boot");  
 }
 
@@ -37,16 +37,16 @@ void loop() {
   }
   
   if (msgsize) {
-    if (booting) {
-      booting = false;
-      digitalWrite(13, HIGH);
-      Console.println("Booted");
-    }
     Mailbox.readMessage(msg);
     Console.println(msg);
     if (msg.length() != 9 || msg[0] != 'S') {
       Console.println("Bad Message");
       return;
+    }
+    if (booting) {
+      booting = false;
+      digitalWrite(13, HIGH);
+      Console.println("Booted");
     }
     for (int i = 0; i < 8; i++) {
       status[i] = byte(msg.charAt(i+1))-48;
