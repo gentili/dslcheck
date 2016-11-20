@@ -2,6 +2,12 @@
 
 void setup() {
   pinMode(13, OUTPUT);
+  for (int i = 0; i < 10; i++) {
+    digitalWrite(13, HIGH);
+    delay(100);
+    digitalWrite(13, LOW);
+    delay(100);
+  }
   digitalWrite(13, HIGH);
   Bridge.begin();
   Mailbox.begin();
@@ -54,22 +60,22 @@ void loop() {
   }
   for (int i = 0; i < 8; i++) {
     if (status[i] == 0) {
-      digitalWrite(i+2, LOW);
+      digitalWrite(9-i, LOW);
     } else
     if (status[i] == 1) {
-      digitalWrite(i+2, HIGH);
+      digitalWrite(9-i, HIGH);
     } else
     if (status[i] == 2) {
       if (curfast > 50)
-        digitalWrite(i+2, HIGH);
+        digitalWrite(9-i, HIGH);
       else
-        digitalWrite(i+2, LOW);
+        digitalWrite(9-i, LOW);
     } else
     if (status[i] == 3) {
       if (curslow > 500)
-        digitalWrite(i+2, HIGH);
+        digitalWrite(9-i, HIGH);
       else
-        digitalWrite(i+2, LOW);
+        digitalWrite(9-i, LOW);
     }
   }
 }
